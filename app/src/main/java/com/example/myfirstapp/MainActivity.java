@@ -7,12 +7,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView result;
     double num1 = 0, num2 = 0;
     int numFlag = 0;
     int actionFlag = 0;
+    DecimalFormat format = new DecimalFormat("0.###");
 
 
     @Override
@@ -33,14 +36,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeState () {
-        if (numFlag == 0) {
-            num1 = Integer.valueOf(result.getText().toString());
+        if (numFlag == 0 || numFlag == 3) {
+            num1 = Double.valueOf(result.getText().toString());
             numFlag = 1;
             result.setText("");
         }
         else if (numFlag == 1) {
-            num1 = Integer.valueOf(result.getText().toString());
+            if (!(result.getText().toString().equals(""))){
+            num1 = Double.valueOf(result.getText().toString());
             result.setText("");
+            }
         }
     }
 
@@ -69,21 +74,26 @@ public class MainActivity extends AppCompatActivity {
             Button b = (Button) view;
             String str = b.getText().toString();
 
-            if (str.equals("÷")) {
-                actionFlag = 1;
-                changeState();
-            }
-            else if (str.equals("x")) {
-                actionFlag = 2;
-                changeState();
-            }
-            else if (str.equals("-")) {
-                actionFlag = 3;
-                changeState();
-            }
-            else if (str.equals("+")){
-                actionFlag = 4;
-                changeState();
+            switch (str) {
+                case "÷":
+                    actionFlag = 1;
+                    changeState();
+                    break;
+
+                case "x":
+                    actionFlag = 2;
+                    changeState();
+                    break;
+
+                case "-":
+                    actionFlag = 3;
+                    changeState();
+                    break;
+
+                case "+":
+                    actionFlag = 4;
+                    changeState();
+                    break;
             }
         }
     }
@@ -93,12 +103,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void buttonFunctionEqual (View view) {
-        if (numFlag == 1) {
-            num2 = Integer.valueOf(result.getText().toString());
-            if (actionFlag == 1) {result.setText(String.valueOf(Double.parseDouble(String.format("%.03f", (num1/num2)))));}
-            else if (actionFlag == 2) {result.setText(String.valueOf((int)(num1*num2)));}
-            else if (actionFlag == 3) {result.setText(String.valueOf((int)(num1-num2)));}
-            else if (actionFlag == 4) {result.setText(String.valueOf((int)(num1+num2)));}
+        if (numFlag == 1 && !(result.getText().toString().equals(""))) {
+            num2 = Double.valueOf(result.getText().toString());
+
+            switch (actionFlag) {
+                case 1:
+                    if (num2 == 0) {
+                        result.setText("ERROR");
+                    } else {
+                    result.setText(format.format(num1/num2));
+                    }
+
+                    break;
+
+                case 2:
+                    result.setText(format.format(num1*num2));
+                    break;
+
+                case 3:
+                    result.setText(format.format(num1-num2));
+                    break;
+
+                case 4:
+                    result.setText(format.format(num1+num2));
+                    break;
+            }
             numFlag = 3;
         }
     }
